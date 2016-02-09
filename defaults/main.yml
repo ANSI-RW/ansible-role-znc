@@ -1,0 +1,13 @@
+---
+znc_conf_use_template: true
+
+znc_conf_listener_port: 1025
+znc_conf_listener_ipv4: true
+znc_conf_listener_ipv6: true
+znc_conf_listener_ssl: false
+
+znc_conf_user_username: admin
+znc_conf_user_password: hackme
+znc_conf_user_ident: admin
+znc_conf_user_nick: admin
+znc_conf_user_realname: Got ZNC?

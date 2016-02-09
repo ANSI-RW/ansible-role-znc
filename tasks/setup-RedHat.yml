@@ -1,0 +1,7 @@
+---
+- name: define znc_enablerepo
+  set_fact: znc_enablerepo={{ __znc_enablerepo }}
+  when: znc_enablerepo is not defined
+
+- name: install znc
+  yum: name=znc state=present enablerepo={{ znc_enablerepo }}
