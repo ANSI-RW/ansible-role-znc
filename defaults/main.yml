@@ -7,6 +7,7 @@ znc_conf_listener_ipv6: true
 znc_conf_listener_ssl: false
 
 znc_conf_user_username: admin
+# Used by "znc --makepass"
 znc_conf_user_password: hackme
 znc_conf_user_ident: admin
 znc_conf_user_nick: admin
