@@ -1,6 +1,6 @@
 # Ansible Role: ZNC
 
-[![Build Status](https://img.shields.io/travis/ANSIRW/ansible-role-znc.svg)](https://travis-ci.org/ANSIRW/ansible-role-znc) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/ANSIRW/ansible-role-znc/master/LICENSE)
+[![Build Status](https://img.shields.io/travis/ANSI-RW/ansible-role-znc.svg)](https://travis-ci.org/ANSI-RW/ansible-role-znc) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/ANSI-RW/ansible-role-znc/master/LICENSE)
 
 Installs and configures ZNC on RHEL/CentOS ~~or Debian/Ubuntu~~.
 
