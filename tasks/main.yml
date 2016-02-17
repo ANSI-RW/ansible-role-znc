@@ -2,52 +2,63 @@
 - name: include os-specific variables
   include_vars: "{{ ansible_os_family }}.yml"
 
+- name: define znc_datadir
+  set_fact: znc_datadir={{ __znc_datadir }}
+  when: znc_datadir is not defined
+
 - include: setup-RedHat.yml
   when: ansible_os_family == "RedHat"
+
+- name: install module dependency
+  # yum/apt version may be unsupported
+  easy_install: name=pexpect state=present
+  when: znc_conf_use_template
 
 - name: generate znc makepass
   expect:
     command: znc --makepass
     responses:
       (?i)password: "{{ znc_conf_user_password }}"
-    creates: /var/lib/znc/.znc/configs/znc.conf
+    # Ensure command is idempotent
+    creates: "{{ znc_datadir }}/configs/znc.conf"
   register: znc_makepass
+  when: znc_conf_use_template
 
 - name: register znc pass method
-  shell: >
-    echo "{{ znc_makepass.stdout }}" | grep -oP "(?<=Method = ).+"
+  shell: echo {{ znc_makepass.stdout | quote }} | grep -oP "(?<=Method = ).+"
   register: znc_conf_user_pass_method
   when: znc_makepass.changed
 
 - name: register znc pass hash
-  shell: >
-    echo "{{ znc_makepass.stdout }}" | grep -oP "(?<=Hash = ).+"
+  shell: echo {{ znc_makepass.stdout | quote }} | grep -oP "(?<=Hash = ).+"
   register: znc_conf_user_pass_hash
   when: znc_makepass.changed
 
 - name: register znc pass salt
-  shell: >
-    echo "{{ znc_makepass.stdout }}" | grep -oP "(?<=Salt = ).+"
+  shell: echo {{ znc_makepass.stdout | quote }} | grep -oP "(?<=Salt = ).+"
   register: znc_conf_user_pass_salt
   when: znc_makepass.changed
 
 - name: create znc datadir
-  file: path=/var/lib/znc/.znc/configs state=directory mode=0700
-  become: yes
-  become_user: znc
+  file: path={{ znc_datadir }}/configs state=directory mode=0700
 
 - name: copy znc conf
-  template: src=znc.conf.j2 dest=/var/lib/znc/.znc/configs/znc.conf mode=0600
-  become: yes
-  become_user: znc
-  when: znc_conf_use_template and znc_makepass.changed
+  template:
+    src: znc.conf.j2
+    dest: "{{ znc_datadir }}/configs/znc.conf"
+    mode: 0600
   notify: restart znc
+  # FIXME: "znc_makepass.changed" will always be false
+  when: znc_conf_use_template and znc_makepass.changed
 
 - name: generate znc pemfile
-  command: znc --makepem creates=/var/lib/znc/.znc/znc.pem
-  become: yes
-  become_user: znc
-  notify: restart znc
+  command: >
+    znc --makepem --datadir={{ znc_datadir }}
+    creates={{ znc_datadir }}/znc.pem
+
+- name: set znc datadir permissions
+  file: path={{ znc_datadir }} state=directory owner=znc group=znc recurse=yes
 
 - name: start and enable znc
   service: name=znc state=started enabled=yes
+  when: znc_conf_use_template
