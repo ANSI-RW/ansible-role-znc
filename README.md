@@ -6,7 +6,7 @@ Installs and configures ZNC on RHEL/CentOS ~~or Debian/Ubuntu~~.
 
 ## Requirements
 
-The EPEL repository on RHEL/CentOS. (https://github.com/ANSIRW/ansible-role-repo-remi)
+- The EPEL repository on RHEL/CentOS. (try https://github.com/ANSI-RW/ansible-role-repo-remi)
 
 ## Role Variables
 
